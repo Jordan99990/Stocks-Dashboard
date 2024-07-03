@@ -1,5 +1,6 @@
 import streamlit as st
 import plotly.express as px
+import plotly.graph_objects as go
 from tasks.stock_dict_fetcher import get_stock_symbols
 
 from tasks.stock_data import (
@@ -25,7 +26,6 @@ def select_stock():
     
     return stock_options.get(option)
 
-# TODO : Add edge cases, in case there are no values for the indicators
 def stock_intel(stock_name, selected_period):
     global stock_info
     
@@ -95,12 +95,15 @@ def stock_intel(stock_name, selected_period):
                 )
     
     def get_earnings_growth(stock_info):
-            earnings_growth = stock_info["earningsGrowth"]
+            earnings_growth = stock_info["earningsGrowth"] 
+            
+            earnings_growth = f'+{earnings_growth}' if earnings_growth > 0 else f'{earnings_growth}'
+            
             st.metric(label="__Earnings Growth Yearly__",
-                    value=f'{earnings_growth}%',
-                    delta=f'+{earnings_growth}%',
+                    value=earnings_growth + '%',
+                    delta=earnings_growth + '%',
                     )
-    
+
     def get_50_day_moving_avg(stock_info):
         moving_avg = stock_info["fiftyDayAverage"]
         st.metric(label="__50 Day Moving Average__",
@@ -156,65 +159,162 @@ def stock_intel(stock_name, selected_period):
     stock_info = get_stock_info(stock_name)
     
     with col1:
-        get_stock_indicator(stock_name, selected_period)
+        try:
+            get_stock_indicator(stock_name, selected_period)
+        except KeyError:
+            st.error("Stock indicator not available")
         st.write(" ")
-        get_earnings_growth(stock_info)
+        try:
+            get_earnings_growth(stock_info)
+        except KeyError:
+            st.error("Earnings growth not available")
         st.write(" ")
-        get_currency_info(stock_info)
+        try:
+            get_currency_info(stock_info)
+        except KeyError:
+            st.error("Currency info not available")
         st.write(" ")
-        get_symbol(stock_info)
+        try:
+            get_symbol(stock_info)
+        except KeyError:
+            st.error("Symbol not available")
         
     with col2:
-        get_market_cap(stock_info)
-        get_total_revenue(stock_info)
-        get_trailing_pe(stock_info)
-        get_52_week_high(stock_info)
-        get_52_week_low(stock_info)
+        try:
+            get_market_cap(stock_info)
+        except KeyError:
+            st.error("Market cap not available")
+        try:
+            get_total_revenue(stock_info)
+        except KeyError:
+            st.error("Total revenue not available")
+        try:
+            get_trailing_pe(stock_info)
+        except KeyError:
+            st.error("Trailing PE not available")
+        try:
+            get_52_week_high(stock_info)
+        except KeyError:
+            st.error("52 week high not available")
+        try:
+            get_52_week_low(stock_info)
+        except KeyError:
+            st.error("52 week low not available")
     
     with col3:
-        get_day_high(stock_info)
-        get_day_low(stock_info)
-        get_previous_close(stock_info)
-        get_free_cash_flow(stock_info)
-        get_50_day_moving_avg(stock_info)
+        try:
+            get_day_high(stock_info)
+        except KeyError:
+            st.error("Day high not available")
+        try:
+            get_day_low(stock_info)
+        except KeyError:
+            st.error("Day low not available")
+        try:
+            get_previous_close(stock_info)
+        except KeyError:
+            st.error("Previous close not available")
+        try:
+            get_free_cash_flow(stock_info)
+        except KeyError:
+            st.error("Free cash flow not available")
+        try:
+            get_50_day_moving_avg(stock_info)
+        except KeyError:
+            st.error("50 day moving average not available")
     
     with col4:
-        get_200_day_moving_avg(stock_info)
-        get_recommendation(stock_info)
-        get_bid(stock_info)
-        get_ask(stock_info)
-        get_target_price(stock_info)
+        try:
+            get_200_day_moving_avg(stock_info)
+        except KeyError:
+            st.error("200 day moving average not available")
+        try:
+            get_recommendation(stock_info)
+        except KeyError:
+            st.error("Recommendation not available")
+        try:
+            get_bid(stock_info)
+        except KeyError:
+            st.error("Bid not available")
+        try:
+            get_ask(stock_info)
+        except KeyError:
+            st.error("Ask not available")
+        try:
+            get_target_price(stock_info)
+        except KeyError:
+            st.error("Target price not available")
 
 def stock_price_chart(stock_name, selected_period):
+    def line_chart(stock_name, selected_period):
+        stock_data = get_stock_data(stock_name, selected_period)
+    
+        stock_data = stock_data["Close"].apply(lambda x: round(x, 2))
+        
+        fig = px.line(stock_data, x=stock_data.index, y="Close")
+        fig.update_layout(width=3*1200)
+        
+        fig.update_yaxes(tickprefix="$", ticksuffix="", tickformat=",.")
+        
+        st.plotly_chart(fig, use_container_width=True)
+    
+    def candlestick_chart(stock_name, selected_period):
+        stock_data = get_stock_data(stock_name, selected_period)
+        
+        fig = go.Figure(data=[go.Candlestick(x=stock_data.index,
+                                             open=round(stock_data['Open'], 2),
+                                             high=round(stock_data['High'], 2),
+                                             low=round(stock_data['Low'], 2),
+                                             close=round(stock_data['Close'], 2))])
+        
+        fig.update_layout(width=3*1200)
+        
+        fig.update_yaxes(tickprefix="$", ticksuffix="", tickformat=",.")
+        
+        st.plotly_chart(fig, use_container_width=True)
+    
+    def ohlc_chart(stock_name, selected_period):
+        stock_data = get_stock_data(stock_name, selected_period)
+        
+        fig = go.Figure(data=[go.Ohlc(x=stock_data.index,
+                                      open=round(stock_data['Open'], 2),
+                                      high=round(stock_data['High'], 2),
+                                      low=round(stock_data['Low'], 2),
+                                      close=round(stock_data['Close'], 2))])
+        
+        fig.update_layout(width=3*1200)
+        
+        fig.update_yaxes(tickprefix="$", ticksuffix="", tickformat=",.")
+        
+        st.plotly_chart(fig, use_container_width=True)
+    
     def select_chart_type():
         chart_type = st.selectbox(
             "Select chart type",
-            ["Line Chart", "Candlestick Chart"],
+            ["Line Chart", "Candlestick Chart", "OHLC Chart"],
             key='chart_type_radio',
         )
         
         return chart_type
     
+    chart_dict = {
+        "Line Chart": line_chart,
+        "Candlestick Chart": candlestick_chart,
+        "OHLC Chart": ohlc_chart,
+    }
+    
     st.write(" ")
     
     _, col1, _ = st.columns(3)
     with col1: 
-        select_chart_type()
+        chart_type = select_chart_type()
     
     st.write(" ")
     _, col2 = st.columns([4, 8])
     with col2:
         st.title("Stock Price Over time")
     
-    #TODO : round the values to 2 decimal places
-    stock_data = get_stock_data(stock_name, selected_period)
-    
-    fig = px.line(stock_data, x=stock_data.index, y="Close")
-    fig.update_layout(width=3*1200)
-    
-    fig.update_yaxes(tickprefix="$", ticksuffix="", tickformat=",.")
-    
-    st.plotly_chart(fig, use_container_width=True)
+    chart_dict[chart_type](stock_name, selected_period)
     
 def first_page():
     menu()

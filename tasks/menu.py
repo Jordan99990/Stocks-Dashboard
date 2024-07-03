@@ -16,3 +16,7 @@ def menu():
     st.sidebar.page_link("./pages/forecasting_comp.py",
                         label = "Stock Forecast",
                         icon="🔮")
+    
+    st.sidebar.page_link("./pages/data.py",
+                        label = "Stock Data",
+                        icon="📊")
