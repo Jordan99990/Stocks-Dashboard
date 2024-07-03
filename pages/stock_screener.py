@@ -25,6 +25,7 @@ def select_stock():
     
     return stock_options.get(option)
 
+# TODO : Add edge cases, in case there are no values for the indicators
 def stock_intel(stock_name, selected_period):
     global stock_info
     
@@ -205,6 +206,7 @@ def stock_price_chart(stock_name, selected_period):
     with col2:
         st.title("Stock Price Over time")
     
+    #TODO : round the values to 2 decimal places
     stock_data = get_stock_data(stock_name, selected_period)
     
     fig = px.line(stock_data, x=stock_data.index, y="Close")

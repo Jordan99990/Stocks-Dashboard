@@ -12,3 +12,7 @@ def menu():
     st.sidebar.page_link("app.py",
                          label = "Stock Overall",
                          icon="📈")
+    
+    st.sidebar.page_link("./pages/forecasting_comp.py",
+                        label = "Stock Forecast",
+                        icon="🔮")
