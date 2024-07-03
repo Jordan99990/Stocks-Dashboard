@@ -1,5 +1,5 @@
 import streamlit as st
-from pages.first_page import first_page
+from pages.stock_screener import first_page
 
 from tasks.menu import (
     page_settings,

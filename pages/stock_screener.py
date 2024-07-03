@@ -27,6 +27,7 @@ def select_stock():
 
 def stock_intel(stock_name, selected_period):
     global stock_info
+    
     def get_stock_indicator(stock_name, selected_period):
         current, percentage_value, = stock_company_info(stock_name, selected_period)
         current = round(current, 2)
@@ -135,8 +136,6 @@ def stock_intel(stock_name, selected_period):
         st.metric(label="__Target Price__",
                 value=f'${target_price}',
                 )
-        print(stock_info)
-    
     
     def get_currency_info(stock_info):
         currency = stock_info["currency"]
@@ -150,7 +149,6 @@ def stock_intel(stock_name, selected_period):
                 value=symbol,
         )
     
-  
     
     col1, col2, col3, col4 = st.columns(4)
     
@@ -158,8 +156,11 @@ def stock_intel(stock_name, selected_period):
     
     with col1:
         get_stock_indicator(stock_name, selected_period)
+        st.write(" ")
         get_earnings_growth(stock_info)
+        st.write(" ")
         get_currency_info(stock_info)
+        st.write(" ")
         get_symbol(stock_info)
         
     with col2:
@@ -183,7 +184,21 @@ def stock_intel(stock_name, selected_period):
         get_ask(stock_info)
         get_target_price(stock_info)
 
-def stock_price_line_chart(stock_name, selected_period):
+def stock_price_chart(stock_name, selected_period):
+    def select_chart_type():
+        chart_type = st.selectbox(
+            "Select chart type",
+            ["Line Chart", "Candlestick Chart"],
+            key='chart_type_radio',
+        )
+        
+        return chart_type
+    
+    st.write(" ")
+    
+    _, col1, _ = st.columns(3)
+    with col1: 
+        select_chart_type()
     
     st.write(" ")
     _, col2 = st.columns([4, 8])
@@ -231,6 +246,6 @@ def first_page():
         
     st.write(" ")
     
-    stock_intel(stock, selected_period)
-    
-    stock_price_line_chart(stock, selected_period)
+    stock_intel(stock, selected_period) 
+                             
+    stock_price_chart(stock, selected_period)
