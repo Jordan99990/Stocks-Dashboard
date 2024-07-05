@@ -6,6 +6,8 @@ from tasks.stock_data import get_stock_data
 from tasks.forecasting.sarimax import forecast_stock_sarimax
 from tasks.forecasting.arima import forecast_stock_arima
 from tasks.forecasting.random_forest import forecast_stock_random_forest
+from tasks.forecasting.linear_regression import forecast_stock_linear_regression
+from tasks.forecasting.svr import forecast_stock_svr
 
 def select_stock():
     global stock_options, option
@@ -29,26 +31,25 @@ def forecasting_chart(stock, period_selected, title_placeholder):
         elif period.endswith('mo'):
             return int(period[0]) * 30  
     
-    data = get_stock_data(stock, "1y")
+    if period_selected is None:
+        st.error("Please select a period")
+        return
     
     _, col2 = st.columns([4, 8])
     with col2:
         with st.spinner('Loading Forecasting'):
-            forecast_df_sarima = forecast_stock_sarimax(data)
-            forecast_df_arima = forecast_stock_arima(data)
-            # forecast_df_random_forest = forecast_stock_random_forest(get_stock_data(stock, "3mo"))
-            
-            forecast_df_sarima.index = forecast_df_arima.index
             combined_forecast_df = pd.DataFrame({
-                "SARIMA": forecast_df_sarima['Forecasted Close'],
-                "ARIMA": forecast_df_arima['Forecasted Close']
-                # "Random Forest": forecast_df_random_forest['Forecasted Close']
+                "SARIMA": forecast_stock_sarimax(get_stock_data(stock, "2y"))['Forecasted Close'],
+                "ARIMA": forecast_stock_arima(get_stock_data(stock, "2y"))['Forecasted Close'],
+                "Linear Regression": forecast_stock_linear_regression(get_stock_data(stock, "1mo"))['Forecasted Close'],
+                # "Random Forest": forecast_stock_random_forest(get_stock_data(stock, "3mo"))['Forecasted Close'],
+                "SVR": forecast_stock_svr(get_stock_data(stock, "6mo"))['Forecasted Close']
             })
     
     days_to_show = period_to_days(period_selected)
     filtered_combined_forecast_df = combined_forecast_df.head(days_to_show)
 
-    title_placeholder.title("Sarima vs Arima vs XGboost vs PyTorch NN")
+    title_placeholder.title("Stock Price Forecast")
     st.line_chart(filtered_combined_forecast_df)
 
 def forecasting_page():
@@ -84,7 +85,7 @@ def forecasting_page():
 
     st.write("")
     
-    _, col2 = st.columns([2, 8])
+    _, col2 = st.columns([4, 8])
     with col2:
         title_placeholder = st.empty()
     

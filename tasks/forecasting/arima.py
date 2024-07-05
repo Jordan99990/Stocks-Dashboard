@@ -14,5 +14,4 @@ def forecast_stock_arima(data):
     forecast_df = pd.DataFrame(forecast, index=forecast_dates, columns=['Forecasted Close'])
     forecast_df['Forecasted Close'] = forecast.values
     
-    print(forecast_df)
     return forecast_df
