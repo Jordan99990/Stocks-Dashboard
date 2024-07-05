@@ -248,14 +248,16 @@ def stock_intel(stock_name, selected_period):
 def stock_price_chart(stock_name, selected_period):
     def line_chart(stock_name, selected_period):
         stock_data = get_stock_data(stock_name, selected_period)
-    
+
         stock_data = stock_data["Close"].apply(lambda x: round(x, 2))
-        
+
         fig = px.line(stock_data, x=stock_data.index, y="Close")
         fig.update_layout(width=3*1200)
-        
-        fig.update_yaxes(tickprefix="$", ticksuffix="", tickformat=",.")
-        
+
+        fig.update_yaxes(title="Stock Price", tickprefix="$", ticksuffix="", tickformat=",")
+
+        fig.update_traces(line_color="blue", selector=dict(type="scatter", mode="lines"))
+
         st.plotly_chart(fig, use_container_width=True)
     
     def candlestick_chart(stock_name, selected_period):
@@ -269,7 +271,7 @@ def stock_price_chart(stock_name, selected_period):
         
         fig.update_layout(width=3*1200)
         
-        fig.update_yaxes(tickprefix="$", ticksuffix="", tickformat=",.")
+        fig.update_yaxes(title = "Stock Price", tickprefix="$", ticksuffix="", tickformat=",.")
         
         st.plotly_chart(fig, use_container_width=True)
     
@@ -284,7 +286,7 @@ def stock_price_chart(stock_name, selected_period):
         
         fig.update_layout(width=3*1200)
         
-        fig.update_yaxes(tickprefix="$", ticksuffix="", tickformat=",.")
+        fig.update_yaxes(title = "Stock Price", tickprefix="$", ticksuffix="", tickformat=",.")
         
         st.plotly_chart(fig, use_container_width=True)
     
@@ -316,7 +318,7 @@ def stock_price_chart(stock_name, selected_period):
     
     chart_dict[chart_type](stock_name, selected_period)
     
-def first_page():
+def stock_page():
     menu()
     
     _, col2 = st.columns([4, 8])
