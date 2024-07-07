@@ -9,9 +9,16 @@ from tasks.forecasting.linear_regression import forecast_stock_linear_regression
 from tasks.forecasting.svr import forecast_stock_svr
 import plotly.express as px
 
-from tasks.menu import (
-    menu
-)
+CONFIG = {
+    "period_options": ['3d', '1w', '2w', '2mo', '3mo'],
+    "data_timeframes": {
+        "SARIMA": "2y",
+        "ARIMA": "2y",
+        "Linear Regression": "1mo",
+        "Random Forest": "6mo",
+        "SVR": "6mo",
+    },
+}
 
 def select_stock():
     global stock_options, option
@@ -43,11 +50,11 @@ def forecasting_chart(stock, period_selected, title_placeholder):
     with col2:
         with st.spinner('Loading Forecasting'):
             combined_forecast_df = pd.DataFrame({
-                "SARIMA": forecast_stock_sarimax(get_stock_data(stock, "2y"))['Forecasted Close'],
-                "ARIMA": forecast_stock_arima(get_stock_data(stock, "2y"))['Forecasted Close'],
-                "Linear Regression": forecast_stock_linear_regression(get_stock_data(stock, "1mo"))['Forecasted Close'],
-                "Random Forest": forecast_stock_random_forest(get_stock_data(stock, "6mo"))['Forecasted Close'],
-                "SVR": forecast_stock_svr(get_stock_data(stock, "6mo"))['Forecasted Close']
+                "SARIMA": forecast_stock_sarimax(get_stock_data(stock, CONFIG["data_timeframes"]["SARIMA"]))['Forecasted Close'],
+                "ARIMA": forecast_stock_arima(get_stock_data(stock, CONFIG["data_timeframes"]["ARIMA"]))['Forecasted Close'],
+                "Linear Regression": forecast_stock_linear_regression(get_stock_data(stock, CONFIG["data_timeframes"]["Linear Regression"]))['Forecasted Close'],
+                "Random Forest": forecast_stock_random_forest(get_stock_data(stock, CONFIG["data_timeframes"]["Random Forest"]))['Forecasted Close'],
+                "SVR": forecast_stock_svr(get_stock_data(stock, CONFIG["data_timeframes"]["SVR"]))['Forecasted Close']
             })
     
     days_to_show = period_to_days(period_selected)
@@ -66,12 +73,29 @@ def forecasting_chart(stock, period_selected, title_placeholder):
 
     st.plotly_chart(fig, use_container_width=True)  
 
-def forecasting_page():
-    menu()
+def period_selection():
+    _, col2, _ = st.columns([1, 2, 1])
+    with col2:
+        period_selected = st.selectbox("Select forecasted period...",
+                options=CONFIG["period_options"],
+                index=None,
+                placeholder="Select a period",
+                key="period_select",
+                help="Select the time period for the forecast"
+        )
     
+    return period_selected
+
+def title_placeholder():
     _, col2 = st.columns([4, 8])
     with col2:
         title_placeholder = st.empty()
+    return title_placeholder
+
+def forecasting_page():
+    _, col2 = st.columns([4, 8])
+    with col2:
+        title_placehold = st.empty()
     
     if 'stock' not in st.session_state:
         st.session_state.stock = None
@@ -83,28 +107,16 @@ def forecasting_page():
     
     st.session_state.stock = stock
     
-    title_placeholder.title(f'{list(stock_options.keys())[list(stock_options.values()).index(stock)]} ({stock})')
+    title_placehold.title(f'{list(stock_options.keys())[list(stock_options.values()).index(stock)]} ({stock})')
     
     st.write(" ")
     
-    _, col2, _ = st.columns([1, 2, 1])
-    with col2:
-        period_selected = st.selectbox("Select forecasted period...",
-                options=['3d', '1w', '2w', '2mo', '3mo'],
-                index=None,
-                placeholder="Select a period",
-                key="period_select",
-                help="Select the time period for the forecast"
-        )
-
+    period_seclected = period_selection()
+    
     st.write("")
     
-    _, col2 = st.columns([4, 8])
-    with col2:
-        title_placeholder = st.empty()
+    title_placehold = title_placeholder()
     
-    forecasting_chart(stock, period_selected, title_placeholder)
+    forecasting_chart(stock, period_seclected, title_placehold)
     
     st.write(" ")
-
-forecasting_page()

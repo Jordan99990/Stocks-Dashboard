@@ -9,10 +9,6 @@ from tasks.stock_data import (
     get_stock_info
 ) 
 
-from tasks.menu import (
-    menu
-)
-
 def select_stock():
     global stock_options, option
     stock_options = get_stock_symbols()
@@ -319,8 +315,6 @@ def stock_price_chart(stock_name, selected_period):
     chart_dict[chart_type](stock_name, selected_period)
     
 def stock_page():
-    menu()
-    
     _, col2 = st.columns([4, 8])
     with col2:
         title_placeholder = st.empty()
