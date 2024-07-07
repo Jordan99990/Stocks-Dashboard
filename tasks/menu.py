@@ -4,7 +4,10 @@ def page_settings():
     st.set_page_config(
     page_title="Stock Dashboard", 
     page_icon=":chart_with_upwards_trend", 
-    layout="wide")
+    initial_sidebar_state="collapsed",
+    layout="wide",
+
+    )
 
 def menu():
     st.sidebar.title("Navigation")
