@@ -321,7 +321,7 @@ def stock_price_chart(stock_name, selected_period):
 def period_selection():
     _, col2, _ = st.columns([1, 2, 1])
     with col2:
-        period_selected = st.selectbox("Select forecasted period...",
+        period_selected = st.selectbox("Select period...",
                 options=CONFIG["period_options"],
                 index=None,
                 placeholder="Select a period",
