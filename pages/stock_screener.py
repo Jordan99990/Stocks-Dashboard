@@ -3,6 +3,10 @@ import plotly.express as px
 import plotly.graph_objects as go
 from tasks.stock_dict_fetcher import get_stock_symbols
 
+CONFIG = {
+    "period_options": ['1d', '5d', '1mo', '3mo', '6mo', '1y', '2y', '5y', '10y', 'ytd', 'max']
+}
+
 from tasks.stock_data import (
     get_stock_data,
     stock_company_info,
@@ -313,7 +317,20 @@ def stock_price_chart(stock_name, selected_period):
         st.title("Stock Price Over time")
     
     chart_dict[chart_type](stock_name, selected_period)
+
+def period_selection():
+    _, col2, _ = st.columns([1, 2, 1])
+    with col2:
+        period_selected = st.selectbox("Select forecasted period...",
+                options=CONFIG["period_options"],
+                index=None,
+                placeholder="Select a period",
+                key="period_select",
+                help="Select the time period for the forecast"
+        )
     
+    return period_selected
+
 def stock_page():
     _, col2 = st.columns([4, 8])
     with col2:
@@ -333,15 +350,8 @@ def stock_page():
     
     st.write(" ")
     
-    _, col2 = st.columns([4, 8])
-    with col2:
-        selected_period = st.radio(
-            "Select period",
-            ["5d", "1mo", "3mo", "6mo", "1y", "2y", "5y", "10y", "ytd", "max"],
-            horizontal=True,
-            key='selected_period_radio'
-        )
-        
+    selected_period = period_selection()
+            
     st.write(" ")
     
     stock_intel(stock, selected_period) 

@@ -1,23 +1,25 @@
-import yfinance as yf
 from tasks.limiter.rate_limiter import configure_cached_limiter_session
 from tasks.limiter.smart_scraping import (
     configure_requests_cache
 )
+from pandas import DataFrame
+
+import yfinance as yf
 
 session = configure_requests_cache("yfinance.cache", "my-program/1.0")
 limiter_session = configure_cached_limiter_session(2, 5, "yfinance.cache")
 
-def get_stock_data(stock: str, selected_period):
+def get_stock_data(stock: str, selected_period: str) -> DataFrame:
     info = yf.Ticker(stock).history(period=selected_period)
     return info
 
 def get_stock_info(stock: str) -> dict:
     return yf.Ticker(stock).info
 
-def get_current_price(stock: str):
+def get_current_price(stock: str) -> DataFrame: 
     return yf.Ticker(stock).history(period="1d").iloc[-1]["Close"]
 
-def stock_company_info(stock: str, selected_period: str):
+def stock_company_info(stock: str, selected_period: str) -> dict[str, str]:
     stock_data = yf.Ticker(stock).history(period=selected_period)
 
     current_price = stock_data.iloc[-1]["Close"]
