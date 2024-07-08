@@ -5,8 +5,7 @@
 ![](./img/5.png)
 ![](./img/6.png)
 ![](./img/7.png)
----------------
-## Architecture
+![](./img/8.png)
 
 ---------------
 ## Data Source
@@ -73,3 +72,21 @@ The primary source of stock data, the YFinance Wrap API allows for the fetching 
 
 ### Linear Regression
 * Lastly linear regression was also used.
+
+### TODO
+- [X] Implement Dashboard 
+  - [X] stock screener page
+  - [X] forecasting page
+  - [X] data page
+  - [ ] Add multiple stocks for comparison 
+- [X] Use forecasting Machine Learning
+  - [X] SARIMAX
+  - [X] ARIMA
+  - [X] Random Forest
+  - [X] SVR
+  - [X] Linear Regression
+  - [ ] PyTorch LSTM
+  - [ ] NN from scratch
+- [X] Scraping
+  - [X] Scrape SP500 companies
+  - [X] Use YFinance for data
